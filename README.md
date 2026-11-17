@@ -1,3 +1,9 @@
-# 🐣 S1 | Prog: Workshop
+# SUPER COMPUTER GRAPHICS - Workshop S1 IMAC
 
-Template de projet pour le workshop de prog des Imac1. Vous trouverez le sujet ici: https://dsmte.github.io/Learn--cpp_programming/Workshop
+Workshop de programmation consistant à coder des filtres pour des images (comme on peut en trouver dans Photoshop, les filtres Instagram, etc.) réalisé en C++.
+
+## Exemples 
+
+![image](output/channels_swap.png)
+![image](output/rgbsplit.png)
+![image](output/rotate90.png)

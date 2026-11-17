@@ -1,5 +1,7 @@
 #include <sil/sil.hpp>
 #include <random.hpp>
+#include <cmath>
+#include <numbers>
 
 void keep_green_only(sil::Image& image)
 {
@@ -116,9 +118,15 @@ void sphere(sil::Image& image)
 {
     for (int x{0}; x<image.width(); x++)
     {
-        for (int y{0}; y<image.height(); y+=3*x)
+        for (int y{0}; y<image.height(); y++)
         {
-            image.pixel(x, y) = glm::vec3{1, 1, 1};
+            int radius {100};
+            int centerx {image.width()/2};
+            int centery {image.height()/2};
+
+            if ((std::pow(x - centerx, 2) + std::pow(y - centery, 2)) <= std::pow(radius, 2)) {
+                image.pixel(x, y) = glm::vec3{1, 1, 1};
+            }
         }
     }
 }
@@ -172,7 +180,7 @@ int main()
     //     image.save("output/rgbsplit.png");
     // }
     {   
-        sil::Image image{300, 300}; 
+        sil::Image image{500, 500}; 
         sphere(image); 
         image.save("output/sphere.png");
     }

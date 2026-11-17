@@ -231,7 +231,7 @@ int main()
     //     image.save("output/disc.png");
     // }
     {   
-        for (int x{0}; x < 450; x+=5){
+        for (int x{0}; x < 450; x++){
             sil::Image image{500, 500};
             disc(image, x); 
             colorsplit(image, x/4);

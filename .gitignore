@@ -1,4 +1,4 @@
-# Prerequisites
+﻿# Prerequisites
 *.d
 
 # Compiled Object files
@@ -66,3 +66,6 @@ vcpkg_installed/
 # test output & cache
 Testing/
 .cache/
+
+# VSC
+.vscode

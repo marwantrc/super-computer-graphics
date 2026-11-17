@@ -134,25 +134,6 @@ void colorsplit(sil::Image& image, int split_strength)
     image = output;
 }
 
-void circle(sil::Image& image)
-{
-    for (int x{0}; x<image.width(); x++)
-    {
-        for (int y{0}; y<image.height(); y++)
-        {
-            int radius {100};
-            int thickness {15};
-            int centerx {image.width()/2};
-            int centery {image.height()/2};
-            double disk_equation {(std::pow(x - centerx, 2) + std::pow(y - centery, 2))};
-
-            if (std::pow(radius - thickness, 2) <= disk_equation && disk_equation <= std::pow(radius, 2)) {
-                image.pixel(x, y) = glm::vec3{1, 1, 1};
-            }
-        }
-    }
-}
-
 void disc(sil::Image& image, int dist_from_center)
 {
     for (int x{0}; x<image.width(); x++)
@@ -168,6 +149,51 @@ void disc(sil::Image& image, int dist_from_center)
             } else {
                 image.pixel(x, y) = glm::vec3{1};
             }
+        }
+    }
+}
+
+// image, centres, radius et épaisseur
+void circle(sil::Image& image, int centerx, int centery, int radius, int thickness)
+{
+    for (int x{0}; x<image.width(); x++)
+    {
+        for (int y{0}; y<image.height(); y++)
+        {
+            double disk_equation {(std::pow(x - centerx, 2) + std::pow(y - centery, 2))};
+
+            if (std::pow(radius - thickness, 2) <= disk_equation && disk_equation <= std::pow(radius, 2)) {
+                image.pixel(x, y) = glm::vec3{0.6, 0.6, 0.6};
+            }
+            //     // tracer le fond
+            //     image.pixel(x, y) = glm::vec3{1, y/float(image.height()*5)+0.85, y/float(image.height()*5)+0.95};
+            // }
+        }
+    }
+}
+
+void rosace(sil::Image& image, int roscenterx, int roscentery, int rosradius, int thickness)
+{
+    circle(image, roscenterx, roscentery, rosradius, thickness);
+
+    for(float angle{0}; angle <= (5*M_PI/3); angle += M_PI/3){
+        double centerx {(roscenterx + (cos(angle)*rosradius))};
+        double centery {(roscentery + (sin(angle)*rosradius))};  
+        
+        circle(image, centerx, centery, rosradius, thickness);
+    }
+}
+
+void background(sil::Image& image)
+{
+    for (int x{0}; x < image.width(); x++)
+    {
+        for (int y{0}; y < image.height(); y++)
+        {
+           if(image.pixel(x, y) == glm::vec3{0}){
+               image.pixel(x, y) = glm::vec3{1, y/float(image.height()*5)+0.85, y/float(image.height()*5)+0.95};
+           } 
+
         }
     }
 }
@@ -222,7 +248,7 @@ int main()
     // }
     // {   
     //     sil::Image image{500, 500}; 
-    //     circle(image); 
+    //     circle(image, image.width()/2, image.height()/2, 100, 25); 
     //     image.save("output/circle.png");
     // }
     // {   
@@ -230,14 +256,20 @@ int main()
     //     disc(image, 100); 
     //     image.save("output/disc.png");
     // }
+    // {   
+    //     for (int x{0}; x < 450; x++){
+    //         sil::Image image{500, 500};
+    //         disc(image, x); 
+    //         colorsplit(image, x/4);
+    //         std::stringstream stream;
+    //         stream << "output/disk_anim/disk_anim_" << x << ".png";
+    //         image.save(stream.str());
+    //     }
+    // }
     {   
-        for (int x{0}; x < 450; x++){
-            sil::Image image{500, 500};
-            disc(image, x); 
-            colorsplit(image, x/4);
-            std::stringstream stream;
-            stream << "output/disk_anim/disk_anim_" << x << ".png";
-            image.save(stream.str());
-        }
+        sil::Image image{500, 500}; 
+        rosace(image, image.width()/2, image.height()/2, 100, 25); 
+        background(image);
+        image.save("output/rosace.png");
     }
 }

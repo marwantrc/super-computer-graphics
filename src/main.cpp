@@ -114,7 +114,7 @@ void rgbsplit(sil::Image& image)
     image = output;
 }
 
-void sphere(sil::Image& image)
+void disc(sil::Image& image)
 {
     for (int x{0}; x<image.width(); x++)
     {
@@ -125,6 +125,25 @@ void sphere(sil::Image& image)
             int centery {image.height()/2};
 
             if ((std::pow(x - centerx, 2) + std::pow(y - centery, 2)) <= std::pow(radius, 2)) {
+                image.pixel(x, y) = glm::vec3{1, 1, 1};
+            }
+        }
+    }
+}
+
+void circle(sil::Image& image)
+{
+    for (int x{0}; x<image.width(); x++)
+    {
+        for (int y{0}; y<image.height(); y++)
+        {
+            int radius {100};
+            int thickness {15};
+            int centerx {image.width()/2};
+            int centery {image.height()/2};
+            double disk_equation {(std::pow(x - centerx, 2) + std::pow(y - centery, 2))};
+
+            if (std::pow(radius - thickness, 2) <= disk_equation && disk_equation <= std::pow(radius, 2)) {
                 image.pixel(x, y) = glm::vec3{1, 1, 1};
             }
         }
@@ -179,10 +198,14 @@ int main()
     //     rgbsplit(image); 
     //     image.save("output/rgbsplit.png");
     // }
+    // {   
+    //     sil::Image image{500, 500}; 
+    //     disc(image); 
+    //     image.save("output/disc.png");
+    // }
     {   
         sil::Image image{500, 500}; 
-        sphere(image); 
-        image.save("output/sphere.png");
+        circle(image); 
+        image.save("output/circle.png");
     }
-
 }

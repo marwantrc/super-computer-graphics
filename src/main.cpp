@@ -95,7 +95,7 @@ void rotate90(sil::Image& image)
     }
 }
 
-void rgbsplit(sil::Image& image)
+void rgbsplit(sil::Image& image, int split_strength)
 {
     sil::Image output{image.width(), image.height()};
     for (int x{0}; x < image.width(); x++)
@@ -103,32 +103,35 @@ void rgbsplit(sil::Image& image)
         for (int y{0}; y < image.height(); y++)
         {
             output.pixel(x, y).g = image.pixel(x, y).g;
-            if(x>50){
-                output.pixel(x, y).r = image.pixel(x-50, y).r;
+            output.pixel(x, y) = glm::vec3{0.75, image.pixel(x, y).g, 0.75};
+            if(x>split_strength){
+                output.pixel(x, y).r = image.pixel(x-split_strength, y).r;
             }
-            if(x<image.width()-50){
-                output.pixel(x, y).b = image.pixel(x+50, y).b;
+            if(x<image.width()-split_strength){
+                output.pixel(x, y).b = image.pixel(x+split_strength, y).b;
             }
         }
     }
     image = output;
 }
 
-void disc(sil::Image& image)
+void colorsplit(sil::Image& image, int split_strength)
 {
-    for (int x{0}; x<image.width(); x++)
+    sil::Image output{image.width(), image.height()};
+    for (int x{0}; x < image.width(); x++)
     {
-        for (int y{0}; y<image.height(); y++)
+        for (int y{0}; y < image.height(); y++)
         {
-            int radius {100};
-            int centerx {image.width()/2};
-            int centery {image.height()/2};
-
-            if ((std::pow(x - centerx, 2) + std::pow(y - centery, 2)) <= std::pow(radius, 2)) {
-                image.pixel(x, y) = glm::vec3{1, 1, 1};
+            output.pixel(x, y) = glm::vec3{0.75, image.pixel(x, y).g, 0.75};
+            if(x>split_strength){
+                output.pixel(x, y).r = image.pixel(x-split_strength, y).r;
+            }
+            if(x<image.width()-split_strength){
+                output.pixel(x, y).b = image.pixel(x+split_strength, y).b;
             }
         }
     }
+    image = output;
 }
 
 void circle(sil::Image& image)
@@ -145,6 +148,25 @@ void circle(sil::Image& image)
 
             if (std::pow(radius - thickness, 2) <= disk_equation && disk_equation <= std::pow(radius, 2)) {
                 image.pixel(x, y) = glm::vec3{1, 1, 1};
+            }
+        }
+    }
+}
+
+void disc(sil::Image& image, int dist_from_center)
+{
+    for (int x{0}; x<image.width(); x++)
+    {
+        for (int y{0}; y<image.height(); y++)
+        {
+            int radius {150};
+            int centerx {image.width()/2 + dist_from_center};
+            int centery {image.height()/2};
+
+            if ((std::pow(x - centerx, 2) + std::pow(y - centery, 2)) <= std::pow(radius, 2)) {
+                image.pixel(x, y) = glm::vec3{0.749, 0.863, 1};
+            } else {
+                image.pixel(x, y) = glm::vec3{1};
             }
         }
     }
@@ -200,12 +222,22 @@ int main()
     // }
     // {   
     //     sil::Image image{500, 500}; 
-    //     disc(image); 
+    //     circle(image); 
+    //     image.save("output/circle.png");
+    // }
+    // {   
+    //     sil::Image image{500, 500}; 
+    //     disc(image, 100); 
     //     image.save("output/disc.png");
     // }
     {   
-        sil::Image image{500, 500}; 
-        circle(image); 
-        image.save("output/circle.png");
+        for (int x{0}; x < 450; x+=5){
+            sil::Image image{500, 500};
+            disc(image, x); 
+            colorsplit(image, x/4);
+            std::stringstream stream;
+            stream << "output/disk_anim/disk_anim_" << x << ".png";
+            image.save(stream.str());
+        }
     }
 }

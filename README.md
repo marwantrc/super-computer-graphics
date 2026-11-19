@@ -4,7 +4,8 @@ Workshop de programmation consistant à coder des filtres pour des images (comme
 
 ## Exemples 
 
-![video](output/disk_anim/disk_anim.gif)
+![video](output/gifs/disk_anim.gif)
+![video](output/gifs/anim3.gif)
 ![image](output/channels_swap.png)
 ![image](output/rgbsplit.png)
 ![image](output/rotate90.png)

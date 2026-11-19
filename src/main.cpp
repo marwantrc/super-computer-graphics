@@ -65,13 +65,13 @@ void mirror(sil::Image& image)
     }
 }
 
-void noise(sil::Image& image, bool mono)
+void noise(sil::Image& image, bool mono, int strength)
 {
     for (int x{0}; x < image.width(); x++)
     {
         for (int y{0}; y < image.height(); y++)
         {
-            int aleatoire = random_int(0, 5);
+            int aleatoire = random_int(0, strength);
             if (aleatoire == 1)
             {
                 if (!mono){
@@ -81,7 +81,7 @@ void noise(sil::Image& image, bool mono)
                         random_float(0, 1)
                     };
                 } else {
-                    image.pixel(x, y) = glm::vec3{random_float(0,1)};
+                    image.pixel(x, y) = glm::vec3{random_float(0,0.5)};
                 }
             }
         }
@@ -188,21 +188,83 @@ void rosace(sil::Image& image, int roscenterx, int roscentery, int rosradius, in
     }
 }
 
-void mosaic(sil::Image& image)
+void mosaic(sil::Image& image, int tiles)
 {
-    sil::Image new_image{image.width()*3, image.height()*3}; 
+    sil::Image new_image{image.width()*tiles, image.height()*tiles}; 
     
     for (int x{0}; x < new_image.width(); x++)
     {
         for (int y{0}; y < new_image.height(); y++)
-        {
+            {
             new_image.pixel(x, y) = image.pixel(x%image.width(), y%image.height());
-            mirror(new_image);
-
         }
     }
-    image = new_image;
+
+    sil::Image final_image{image.width(), image.height()}; 
+
+   for (int x{0}; x < final_image.width(); x++)
+    {
+        for (int y{0}; y < final_image.height(); y++)
+        {
+            final_image.pixel(x, y) = new_image.pixel(x*tiles, y*tiles);
+        }
+    }
+
+    image = final_image;
 }
+
+void mosaic_mirror(sil::Image& image, int tiles)
+{
+    // crée le receptacle de l'opération mosaique
+    sil::Image new_image{image.width()*tiles, image.height()*tiles}; 
+
+    // cordonnées en tiles
+    int tile_x {0};
+    int tile_y {0};
+
+    // taille d'une tile en pixel
+    int tile_sizex = new_image.width()/tiles;
+    int tile_sizey = new_image.height()/tiles; 
+    
+    for (int x{0}; x < new_image.width(); x++)
+    {
+        if(x%tile_sizex == 0){
+            tile_x ++;
+        }
+        for (int y{0}; y < new_image.height(); y++){
+            
+            if(y%tile_sizey == 0){
+                tile_y ++;
+            }
+
+            if(tile_x%2 == tile_y%2){
+                if(tile_y%2 == 0){
+                    new_image.pixel(x, y) = image.pixel((tile_x*tile_sizex - x)%image.width(), (tile_y*tile_sizey - y)%image.height());
+                } else{
+                    new_image.pixel(x, y) = image.pixel(x%image.width(), y%image.height());
+                }
+            } else if (tile_y%2 == 1){
+                new_image.pixel(x, y) = image.pixel((tile_x*tile_sizex - x)%image.width(), y%image.height());
+            } else if (tile_y%2 == 0){
+                new_image.pixel(x, y) = image.pixel(x%image.width(), (tile_y*tile_sizey - y)%image.height());
+            }
+        }
+        tile_y = 0;
+    }
+    
+    sil::Image final_image{image.width(), image.height()}; 
+
+   for (int x{0}; x < final_image.width(); x++)
+    {
+        for (int y{0}; y < final_image.height(); y++)
+        {
+            final_image.pixel(x, y) = new_image.pixel(x*tiles, y*tiles);
+        }
+    }
+
+    image = final_image;
+}
+
 
 void background(sil::Image& image)
 {
@@ -283,12 +345,27 @@ int main()
     //         image.save(stream.str());
     //     }
     // }
+    // {   
+    //     sil::Image image{"images/image.jpg"}; 
+    //     mosaic_mirror(image, 10); 
+    //     image.save("output/mosaic_mirror.png");
+    // }
+    // {   
+    //     sil::Image image{"images/image.jpg"}; 
+    //     mosaic(image, 10); 
+    //     image.save("output/mosaic.png");
+    // }
     {   
-        sil::Image image{"images/image.jpg"}; 
-        mosaic(image); 
-        // noise(image, true);
-        image.save("output/mosaic.png");
+        for (int x{0}; x < 450; x++){
+            sil::Image image{500, 500};
+            background(image);
+            rosace(image, image.width()/2, image.height()/2, 1+x, 15+x/5); 
+            mosaic_mirror(image, 6);
+            channels_swap(image);
+            std::stringstream stream;
+            stream << "output/anim2/anim_" << x << ".png";
+            image.save(stream.str());
+        }
     }
-
 
 }

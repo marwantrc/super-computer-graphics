@@ -39,3 +39,34 @@ rend le bruit en nuances de gris (vu qu'on a une valeur pour tous les channels)
 ### rotation 90
 
 au lieu de parcourir la moitié sur l'axe y on parcourt la moitié sur la diagonale, après j'avoue c'était beaucoup de tâtonnements pour trouver la formule. Je vois bien qu'il y a une translation intelligente qui se fait à partir de la formule, mais visuellement c'est difficile de me le représenter
+
+### rosace et cercle
+
+```
+void rosace(sil::Image& image, int roscenterx, int roscentery, int rosradius, int thickness)
+{
+    circle(image, roscenterx, roscentery, rosradius, thickness);
+
+    for(float angle{0}; angle <= (5*M_PI/3); angle += M_PI/3){
+        double centerx {(roscenterx + (cos(angle)*rosradius))};
+        double centery {(roscentery + (sin(angle)*rosradius))};  
+        
+        circle(image, centerx, centery, rosradius, thickness);
+    }
+}
+```
+
+en fait j'ai juste répété la fonction cercle en changeant le centre du cercle, mais du coup je me suis rendu compte avec ça que je peux empiler les fonctions pour créer des compositions si je voulais vraiment
+
+```
+{   
+    sil::Image image{"images/image.jpg"}; 
+    mosaic(image); 
+    noise(image, true);
+    image.save("output/mosaic.png");
+}
+```
+
+par exemple là c comme des calques sur photoshop je mets un filtre mosaïque, puis je rajoute du bruit monochrome (paramètre mono = true sur l'exemple), et si je veux je peux rajouter du background, etc. mettre des paramètres sur les fonctions pour modifier directement les valeurs une seule fois quand je les appelle
+
+certains dans la classe se sont amusés et ont même fait une invite de commandes pour créer un mini photoshop en version ligne de commande c'est trop cool!!

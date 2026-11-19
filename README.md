@@ -8,3 +8,4 @@ Workshop de programmation consistant à coder des filtres pour des images (comme
 ![image](output/channels_swap.png)
 ![image](output/rgbsplit.png)
 ![image](output/rotate90.png)
+

@@ -65,7 +65,7 @@ void mirror(sil::Image& image)
     }
 }
 
-void noise(sil::Image& image)
+void noise(sil::Image& image, bool mono)
 {
     for (int x{0}; x < image.width(); x++)
     {
@@ -74,11 +74,15 @@ void noise(sil::Image& image)
             int aleatoire = random_int(0, 5);
             if (aleatoire == 1)
             {
-                image.pixel(x, y) = glm::vec3{
-                    random_float(0, 1),
-                    random_float(0, 1),
-                    random_float(0, 1)
-                };
+                if (!mono){
+                    image.pixel(x, y) = glm::vec3{
+                        random_float(0, 1),
+                        random_float(0, 1),
+                        random_float(0, 1)
+                    };
+                } else {
+                    image.pixel(x, y) = glm::vec3{random_float(0,1)};
+                }
             }
         }
     }
@@ -163,7 +167,7 @@ void circle(sil::Image& image, int centerx, int centery, int radius, int thickne
             double disk_equation {(std::pow(x - centerx, 2) + std::pow(y - centery, 2))};
 
             if (std::pow(radius - thickness, 2) <= disk_equation && disk_equation <= std::pow(radius, 2)) {
-                image.pixel(x, y) = glm::vec3{0.6, 0.6, 0.6};
+                image.pixel(x, y) = glm::vec3{0};
             }
             //     // tracer le fond
             //     image.pixel(x, y) = glm::vec3{1, y/float(image.height()*5)+0.85, y/float(image.height()*5)+0.95};
@@ -184,20 +188,33 @@ void rosace(sil::Image& image, int roscenterx, int roscentery, int rosradius, in
     }
 }
 
+void mosaic(sil::Image& image)
+{
+    sil::Image new_image{image.width()*3, image.height()*3}; 
+    
+    for (int x{0}; x < new_image.width(); x++)
+    {
+        for (int y{0}; y < new_image.height(); y++)
+        {
+            new_image.pixel(x, y) = image.pixel(x%image.width(), y%image.height());
+            mirror(new_image);
+
+        }
+    }
+    image = new_image;
+}
+
 void background(sil::Image& image)
 {
     for (int x{0}; x < image.width(); x++)
     {
         for (int y{0}; y < image.height(); y++)
         {
-           if(image.pixel(x, y) == glm::vec3{0}){
-               image.pixel(x, y) = glm::vec3{1, y/float(image.height()*5)+0.85, y/float(image.height()*5)+0.95};
-           } 
-
+        //  image.pixel(x, y) = glm::vec3{1, y/float(image.height()*5)+0.85, y/float(image.height()*5)+0.95};
+            image.pixel(x, y) = glm::vec3{1};
         }
     }
 }
-
 
 int main()
 {
@@ -267,9 +284,11 @@ int main()
     //     }
     // }
     {   
-        sil::Image image{500, 500}; 
-        rosace(image, image.width()/2, image.height()/2, 100, 25); 
-        background(image);
-        image.save("output/rosace.png");
+        sil::Image image{"images/image.jpg"}; 
+        mosaic(image); 
+        // noise(image, true);
+        image.save("output/mosaic.png");
     }
+
+
 }

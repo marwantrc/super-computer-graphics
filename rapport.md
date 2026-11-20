@@ -175,9 +175,12 @@ En modifiant les valeurs de mon threshold je peux avoir une palette de couleurs 
 ![image](output/dithering1.png);
 ![image](output/dithering2.png);
 
-Ou même le mélanger à un filtre mosaïque miroir par exemple !
+Ou même le mélanger à un filtre mosaïque miroir par exemple ! Ou faire plein d'autres mélanges
 
 ![image](output/experiment.png);
+![video](output/gifs/anim3.gif);
+
+
 
 
 

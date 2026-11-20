@@ -5,6 +5,10 @@
 > Les étoiles (⭐) représentent le niveau de difficulté pour coder chaque effet. Le sujet d'origine contient des exercices allant jusqu'à six étoiles (⭐⭐⭐⭐⭐⭐).
 
 
+> [!NOTE]
+> Mon projet n'existe pas sous forme de logiciel, je le fais tourner uniquement depuis mon IDE VSCode. Donc pas d'exécutable utilisable par le grand public pour l'instant (même si vous pouvez toujours cloner le repo GitHub et exécuter le code vous-mêmes)!
+
+
 ## ⭐
 
 ### Garder un seul canal

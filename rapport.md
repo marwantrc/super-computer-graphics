@@ -159,6 +159,8 @@ void rosace(sil::Image& image, int roscenterx, int roscentery, int rosradius, in
 en fait j'ai juste répété la fonction cercle en changeant le centre du cercle, mais du coup je me suis rendu compte avec ça que je peux empiler les fonctions pour créer des compositions si je voulais vraiment, ajouter un filtre mosaïque, faire des animations, augmenter la taille du cercle au fil du temps, etc.
 
 ![video](output/gifs/anim3.gif)
+![video](output/gifs/anim2.gif)
+
 
 ## ⭐⭐⭐⭐
 
@@ -175,11 +177,13 @@ En modifiant les valeurs de mon threshold je peux avoir une palette de couleurs 
 ![image](output/dithering1.png);
 ![image](output/dithering2.png);
 
-Ou même le mélanger à un filtre mosaïque miroir par exemple ! Ou faire plein d'autres mélanges
+Ou même le mélanger à un filtre mosaïque miroir par exemple !
 
 ![image](output/experiment.png);
+
+Sur ce gif, j'ai fait varier la valeur des couleurs de départ et d'arrivée de mon threshold au fil du temps  !
+
 ![video](output/gifs/anim2_super.gif);
-![image](output/gifs/anim2.gif);
 
 
 

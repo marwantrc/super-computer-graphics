@@ -1,56 +1,44 @@
 
-# Rapport du workshop
+# SUPER COMPUTER GRAPHICS - Rapport du workshop
+
+> [!NOTE]
+> Les étoiles (⭐) représentent le niveau de difficulté pour coder chaque effet. Le sujet d'origine contient des exercices allant jusqu'à six étoiles (⭐⭐⭐⭐⭐⭐).
+
 
 ## ⭐
 
-### swap channels
+### Garder un seul canal
 
 ![image](output/green.png)
 
-```
-tmp = color.r;
-color.r = color.b;
-color.b = tmp;
-```
-
-J'ai fait une variable tmp avant de voir que y'avait la fonction native swap, soit.
-
-### channel swap
+### Channel swap
 
 ![image](output/channels_swap.png)
 
-### noir et blanc
+### Greyscale
 
 ![image](output/greyscale.png)
 
-On fait une moyenne de chaque canal et on l'assigne cette moyenne à tous les canaux parce que les gris ont toujours des valeurs de canaux égales (genre 12 12 12 ou 123 123 123).
-
-### inverser
+### Invert
 
 ![image](output/invert.png)
 
-OK c'est greg qui m'a donné la solution je sais pas pourquoi j'avais pas pensé à faire 1 - la valeur du channel.
-
-### gradient
+### Genérer un gradient
 
 ![image](output/gradient.png)
 
 
-
-
-
-
 ## ⭐⭐
 
-### miroir
+### Miroir
 ![image](output/mirror.png)
 
 
-### noise
+### Noise
 
 ![image](output/noise.png)
 
-```
+```c++
 image.pixel(x, y) = glm::vec3{
     random_float(0, 1),
     random_float(0, 1),
@@ -60,12 +48,12 @@ image.pixel(x, y) = glm::vec3{
 
 permet un bruit coloré, tandis que : 
 
-```
+```c++
 image.pixel(x, y) = glm::vec3{random_float(0, 1)};
 ```
 rend le bruit en nuances de gris (vu qu'on a une valeur pour tous les channels).
 
-### white noise
+### White noise
 
 ![image](output/noise2.png)
 
@@ -74,22 +62,52 @@ Cette fois-ci au lieu d'agir aléatoirement sur certains pixels on agit sur TOUS
 *(Pour l'instant j'ai réussi à faire que ça en greyscale au vu de la facilité de modifier une seule valeur **brightness** pour chaque pixel)*
 
 
-### rotation 90
+### Rotation à 90°
 
 ![image](output/rotate90.png)
 
 Au lieu de parcourir la moitié sur l'axe y on parcourt la moitié sur la diagonale, après j'avoue c'était beaucoup de tâtonnements pour trouver la formule. Je vois bien qu'il y a une translation intelligente qui se fait à partir de la formule, mais visuellement c'est difficile de me le représenter.
 
-### rgbsplit
+### RGB Split
 
 ![image](output/rgb_split.png)
 
-### cercle
+### Luminosité
+
+![image](output/brightness_high.png)
+![image](output/brightness_low.png)
+
+### Disque
+
+![image](output/disk_anim/disk_anim_0.png)
+
+```c++
+double disk_equation {(std::pow(x - centerx, 2) + std::pow(y - centery, 2))};
+
+if (disk_equation <= std::pow(radius, 2)) {
+    image.pixel(x, y) = glm::vec3{0};
+}
+```
+
+En français, ça veut dire qu'on trace uniquement nos pixels du disque si les dits pixel se trouvent dans l'équation d'un disque : 
+
+$$(x - x_0)^2 + (y - y_0)^2 = r^2$$
+
+
+### Cercle
 ![image](output/circle.png)
+
+On ajoute un paramètre d'épaisseur, qui s'obtient simplement en rajoutant une nouvelle condition à notre code d'origine :
+
+```c++
+if (std::pow(radius - thickness, 2) <= disk_equation && disk_equation <= std::pow(radius, 2)) {
+                image.pixel(x, y) = glm::vec3{0};
+            }
+```
 
 Ma fonction admet plusieurs paramètres pour changer la position du cercle, son rayon et son épaisseur de contours, ce qui s'avère très utile pour modifier les propriétés du cercle en fonction du temps !
 
-```
+```c++
 void circle(sil::Image& image, int centerx, int centery, int radius, int thickness)
 {
     for (int x{0}; x<image.width(); x++)
@@ -106,10 +124,17 @@ void circle(sil::Image& image, int centerx, int centery, int radius, int thickne
 }
 ```
 
+### Animer le disque
+![video](output/gifs/disk_anim.gif)
+
+Onreprend le disque, mais en plus de modifier la position du cercle en fonction du temps, j'ai également appliqué un filtre rgbsplit qui augmente en fonction du temps (avec une boucle *for* au moment d'appeler les fonctions, dont je précise le fonctionnement plus bas dans le rapport), et qui remplace le canal vert par une couleur légèrement différente, donnant un rendu super intéressant!!
+
 ### mosaique
 ![image](output/mosaic.png)
 
-```
+On répète une image en plusieurs fois, ce qui ici peut prendre plus de temps que prévu en temps de rendu si l'on n'intègre pas cette portion de fonction : 
+
+```c++
 sil::Image final_image{image.width(), image.height()}; 
 
 for (int x{0}; x < final_image.width(); x++)
@@ -123,26 +148,17 @@ for (int x{0}; x < final_image.width(); x++)
 image = final_image;
 ```
 
+Ces lignes permettent de redimensionner l'image à sa taille d'origine, puisque la mosaique répète l'image et augmente donc la taille du rendu (Si la taille d'origine est de 600px, et qu'on répète l'image 10 fois, la taille finale sera de 600 x 10 = 6000px, d'où le besoin de la rétrécir après coup).
 
-Un morceau de la fonction permet de resize l'image à sa taille d'origine, puisque la mosaique répète l'image et augmente donc la taille du rendu (Si la taille d'origine est de 300px, et qu'on répète l'image 5 fois, la taille finale sera de 300 x 5 = 1500px, d'où le besoin de la rétrécir après coup).
-
-### anim de cercle
-![video](output/gifs/disk_anim.gif)
-
-En plus de modifier la position du cercle en fonction du temps, j'ai également appliqué un filtre rgbsplit qui augmente en fonction du temps (avec une boucle *for* au moment d'appeler les fonctions), et qui remplace le canal vert par une couleur légèrement différente, donnant un rendu assez intéressant!!
 
 ## ⭐⭐⭐
-
-### disque
-
-![image](output/disk_anim/disk_anim_0.png)
 
 ### rosace
 
 ![image](output/rosace.png)
 
 
-```
+```c++
 void rosace(sil::Image& image, int roscenterx, int roscentery, int rosradius, int thickness)
 {
     circle(image, roscenterx, roscentery, rosradius, thickness);
@@ -156,7 +172,7 @@ void rosace(sil::Image& image, int roscenterx, int roscentery, int rosradius, in
 }
 ```
 
-en fait j'ai juste répété la fonction cercle en changeant le centre du cercle, mais du coup je me suis rendu compte avec ça que je peux empiler les fonctions pour créer des compositions si je voulais vraiment, ajouter un filtre mosaïque, faire des animations, augmenter la taille du cercle au fil du temps, etc.
+J'ai juste répété la fonction `circle` en changeant le centre du cercle, mais du coup je me suis rendu compte avec ça que je peux empiler les fonctions pour créer des compositions si je voulais vraiment, ajouter un filtre mosaïque, faire des animations, augmenter la taille du cercle au fil du temps, etc.
 
 ![video](output/gifs/anim3.gif)
 ![video](output/gifs/anim2.gif)
@@ -172,18 +188,45 @@ en fait j'ai juste répété la fonction cercle en changeant le centre du cercle
 
 ![image](output/dithering.png)
 
-En modifiant les valeurs de mon threshold je peux avoir une palette de couleurs différente :
+Le dithering, ou tramage, consiste à calculer la valeur de couleur d'un pixel en fonction d'un objet mathématique bien spécifique appelé matrice de Bayer. C'est essentiellement un tableau de nombres aux valeurs précises et définies par cette équation (pour les plus matheux) : 
 
-![image](output/dithering1.png);
-![image](output/dithering2.png);
+$$
+M_{2n} = \begin{pmatrix}
+4M_n & 4M_n + 2J_n \\
+4M_n + 3J_n & 4M_n + J_n
+\end{pmatrix}
+$$
 
-Ou même le mélanger à un filtre mosaïque miroir par exemple !
+À partir de ce tableau de nombres, et en appliquant un effet de seuil (qui convertit tous les pixels de couleurs en noir ou blanc uniquement), on obtient alors ce rendu si caractéristique !
 
-![image](output/experiment.png);
+En modifiant les valeurs de couleur de mon threshold (donc au lieu de juste convertir mes pixels en noir ou blanc mais en d'autres couleurs) j'obtiens des palettes de couleurs différente :
 
-Sur ce gif, j'ai fait varier la valeur des couleurs de départ et d'arrivée de mon threshold au fil du temps  !
+![image](output/dithering1.png)
+![image](output/dithering2.png)
 
-![video](output/gifs/anim2_super.gif);
+En empilant les filtres, comme ici avec un filtre mosaïque miroir, on obtient aussi des choses comme ça :
+
+![image](output/experiment.png)
+
+Sur ce gif, j'ai fait varier la valeur des couleurs de départ et d'arrivée de mon threshold au fil du temps!
+
+![video](output/gifs/anim2_super.gif)
+
+```c++
+for (int x{1}; x < 450; x++){
+    sil::Image image{500, 500};
+    background(image);
+    rosace(image, image.width()/2, image.height()/2, 1+x, 15+x/5); 
+    mosaic_mirror(image, 6);
+    dither(image);
+    threshold(image, 0.5, 1-(x/450.f), 1-(x/450.f), 1, 0.5+(x/900.f), 0.5-(x/900.f), 1-(x/450.f));
+    std::stringstream stream;
+    stream << "output/anim3/anim_" << x << ".png";
+    image.save(stream.str());
+}
+```
+Pour expliquer plus précisément le processus d'animation : il suffit d'utiliser une boucle `for` pour itérer la génération d'image. On applique les filtres qu'on veut (en l'occurence du dithering et une mosaïque miroir), puis on renomme à chaque fois l'image de sortie avec notre index `x` pour ne pas les écraser.  J'ai ensuite récupéré toutes les frames et en j'en ai fait le .gif que vous voyez plus haut via un site web de création de gifs ! 
+
 
 
 

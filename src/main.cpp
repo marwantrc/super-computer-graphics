@@ -152,6 +152,17 @@ void colorsplit(sil::Image& image, int split_strength)
     image = output;
 }
 
+void brightness(sil::Image& image, float strength)
+{
+   for (glm::vec3& color : image.pixels())
+    {
+        // strength > 1 => luminosité ++, strength < 1 => luminosité --
+        color.r = std::pow(color.r, 1/strength);
+        color.g = std::pow(color.g, 1/strength);
+        color.b = std::pow(color.b, 1/strength);
+    }
+}
+
 void disc(sil::Image& image, int dist_from_center)
 {
     for (int x{0}; x<image.width(); x++)
@@ -337,13 +348,16 @@ int main()
 { 
     
     // // sil::Image image{500, 500};
-    // sil::Image image{"images/suns.jpg"}; 
-
-    // // background(image);
-    // mosaic_mirror(image, 6);
+    sil::Image image{"images/suns.jpg"}; 
     // dither(image);
-    // threshold(image, 0.5);
-    // image.save("output/experiment.png");
+    // threshold(image, 0.5, 1, 1, 1, 0, 0, 0);
+    // image.save("output/dither.png");
+
+    // background(image);
+    mosaic_mirror(image, 6);
+    dither(image);
+    threshold(image, 0.5, 1, 1, 1, 0, 0, 0);
+    image.save("output/experiment.png");
 
 
     // channels_swap(image);
@@ -367,17 +381,16 @@ int main()
     // noise(image, true, 5);
     // image.save("output/noise.png");
 
-    
-    for (int x{1}; x < 450; x++){
-        sil::Image image{500, 500};
-        background(image);
-        rosace(image, image.width()/2, image.height()/2, 1+x, 15+x/5); 
-        mosaic_mirror(image, 6);
-        dither(image);
-        threshold(image, 0.5, 1-(x/450.f), 1-(x/450.f), 1, 0.5+(x/900.f), 0.5-(x/900.f), 1-(x/450.f));
-        std::stringstream stream;
-        stream << "output/anim3/anim_" << x << ".png";
-        image.save(stream.str());
-    }
+    // for (int x{1}; x < 450; x++){
+    //     sil::Image image{500, 500};
+    //     background(image);
+    //     rosace(image, image.width()/2, image.height()/2, 1+x, 15+x/5); 
+    //     mosaic_mirror(image, 6);
+    //     dither(image);
+    //     threshold(image, 0.5, 1-(x/450.f), 1-(x/450.f), 1, 0.5+(x/900.f), 0.5-(x/900.f), 1-(x/450.f));
+    //     std::stringstream stream;
+    //     stream << "output/anim3/anim_" << x << ".png";
+    //     image.save(stream.str());
+    // }
 
 }

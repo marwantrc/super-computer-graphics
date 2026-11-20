@@ -346,7 +346,7 @@ void dither(sil::Image& image)
 // la fonction retourne une image, qu'on pourra alors définir directement par la fonction diamond square !
 sil::Image diamond_square(int size)
 {
-    int image_size = (1 << size) + 1;
+    int image_size = (std::pow(2, size)) + 1;
     sil::Image image{image_size, image_size};
     int max_altitude{16};
 
@@ -362,30 +362,63 @@ sil::Image diamond_square(int size)
     int& bottom_left = altitude[first][last];
     int& bottom_right = altitude[last][last];
 
-    // milieu de chaque côté
-    int& top = altitude[middle][first];
-    int& bottom = altitude[middle][last];
-    int& left = altitude[first][middle];
-    int& right = altitude[last][middle];
-
-    // centre
-    int& center = altitude[middle][middle];
-
+    
     // altitude des coins
     top_left = random_int(1, max_altitude);
     top_right = random_int(1, max_altitude);
     bottom_left = random_int(1, max_altitude);
     bottom_right = random_int(1, max_altitude);
-
     
-    // centre = moyenne des 4 coins + random
-    center = (top_left + top_right + bottom_left + bottom_right) / 4 + random_int(-4, 4);
+    int rand_min{-4};
+    int rand_max{4};
+    int squares{1};
 
-    // milieu de chaque côté = moyenne des 3 voisins + random
-    top = (top_left + top_right + center) / 3 + random_int(-4, 4);
-    bottom = (bottom_left + bottom_right + center) / 3 + random_int(-4, 4);
-    left = (top_left + bottom_left + center) / 3 + random_int(-4, 4);
-    right = (top_right + bottom_right + center) / 3 + random_int(-4, 4);
+    while(last >= 1){
+        for(int x{0}; x <= squares; x++)
+        {
+            
+                
+            // coins
+            int& top_left = altitude[first][first];
+            int& top_right = altitude[last][first];
+            int& bottom_left = altitude[first][last];
+            int& bottom_right = altitude[last][last];
+
+            // centre
+            int& center = altitude[middle][middle];
+            
+            
+            // centre = moyenne des 4 coins + random
+            center = (top_left + top_right + bottom_left + bottom_right) / 4 + random_int(rand_min, rand_max);
+            
+            // milieu de chaque côté
+            int& top = altitude[middle][first];
+            int& bottom = altitude[middle][last];
+            int& left = altitude[first][middle];
+            int& right = altitude[last][middle];
+
+            // milieu de chaque côté = moyenne des 3 voisins + random
+            top = (top_left + top_right + center) / 3 + random_int(rand_min, rand_max);
+            bottom = (bottom_left + bottom_right + center) / 3 + random_int(rand_min, rand_max);
+            left = (top_left + bottom_left + center) / 3 + random_int(rand_min, rand_max);
+            right = (top_right + bottom_right + center) / 3 + random_int(rand_min, rand_max);
+
+            
+        }   
+        last /= 2;
+        middle /= 2;
+        squares *= 2;
+
+        if(rand_min<0){
+            rand_min += 1;
+        }
+
+        if(rand_max>0){
+            rand_max -= 1;
+        }
+        
+    }
+    
 
     // conversion int -> couleur
     for (int x{0}; x < image.width(); x++)
@@ -408,7 +441,7 @@ int main()
     // threshold(image, 0.5, 1, 1, 1, 0, 0, 0);
     // image.save("output/dither.png");
     
-    sil::Image image(diamond_square(3)); 
+    sil::Image image(diamond_square(5)); 
     image.save("output/diamondsquare/iteration1.png");
 
 

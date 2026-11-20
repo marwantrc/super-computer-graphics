@@ -289,14 +289,14 @@ void mosaic_mirror(sil::Image& image, int tiles)
 }
 
 
-void background(sil::Image& image)
+void background(sil::Image& image, float red, float green, float blue)
 {
     for (int x{0}; x < image.width(); x++)
     {
         for (int y{0}; y < image.height(); y++)
         {
         //  image.pixel(x, y) = glm::vec3{1, y/float(image.height()*5)+0.85, y/float(image.height()*5)+0.95};
-            image.pixel(x, y) = glm::vec3{1};
+            image.pixel(x, y) = glm::vec3{red, green, blue};
         }
     }
 }
@@ -343,21 +343,73 @@ void dither(sil::Image& image)
     }
 }
 
+// la fonction retourne une image, qu'on pourra alors définir directement par la fonction diamond square !
+sil::Image diamond_square(int size)
+{
+    int image_size = (1 << size) + 1;
+    sil::Image image{image_size, image_size};
+    int max_altitude{16};
+
+    std::vector<std::vector<int>> altitude(image_size, std::vector<int>(image_size, 0));
+
+    int first{0};
+    int last{image_size - 1};
+    int middle{last / 2};
+
+    // coins
+    int& top_left = altitude[first][first];
+    int& top_right = altitude[last][first];
+    int& bottom_left = altitude[first][last];
+    int& bottom_right = altitude[last][last];
+
+    // milieu de chaque côté
+    int& top = altitude[middle][first];
+    int& bottom = altitude[middle][last];
+    int& left = altitude[first][middle];
+    int& right = altitude[last][middle];
+
+    // centre
+    int& center = altitude[middle][middle];
+
+    // altitude des coins
+    top_left = random_int(1, max_altitude);
+    top_right = random_int(1, max_altitude);
+    bottom_left = random_int(1, max_altitude);
+    bottom_right = random_int(1, max_altitude);
+
+    
+    // centre = moyenne des 4 coins + random
+    center = (top_left + top_right + bottom_left + bottom_right) / 4 + random_int(-4, 4);
+
+    // milieu de chaque côté = moyenne des 3 voisins + random
+    top = (top_left + top_right + center) / 3 + random_int(-4, 4);
+    bottom = (bottom_left + bottom_right + center) / 3 + random_int(-4, 4);
+    left = (top_left + bottom_left + center) / 3 + random_int(-4, 4);
+    right = (top_right + bottom_right + center) / 3 + random_int(-4, 4);
+
+    // conversion int -> couleur
+    for (int x{0}; x < image.width(); x++)
+    {
+        for (int y{0}; y < image.height(); y++)
+        {
+            // on limite les valeurs pour qu'elles soient au minimum à 0 ou au maximum à 16
+            int value = std::max(0, std::min(altitude[x][y], max_altitude));
+            image.pixel(x, y) = glm::vec3{value / static_cast<float>(max_altitude)};
+        }
+    }
+    return image;
+}
 
 int main()
 { 
     
-    // // sil::Image image{500, 500};
-    sil::Image image{"images/suns.jpg"}; 
+    // sil::Image image{"images/suns.jpg"}; 
     // dither(image);
     // threshold(image, 0.5, 1, 1, 1, 0, 0, 0);
     // image.save("output/dither.png");
-
-    // background(image);
-    mosaic_mirror(image, 6);
-    dither(image);
-    threshold(image, 0.5, 1, 1, 1, 0, 0, 0);
-    image.save("output/experiment.png");
+    
+    sil::Image image(diamond_square(3)); 
+    image.save("output/diamondsquare/iteration1.png");
 
 
     // channels_swap(image);

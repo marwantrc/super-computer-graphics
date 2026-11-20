@@ -97,7 +97,8 @@ if (disk_equation <= std::pow(radius, 2)) {
 
 En français, ça veut dire qu'on trace uniquement nos pixels du disque si les dits pixel se trouvent dans l'équation d'un disque : 
 
-$$(x - x_0)^2 + (y - y_0)^2 = r^2$$
+$$(x - x_0)^2 + (y - y_0)^2 \le r^2$$
+
 
 
 ### Cercle

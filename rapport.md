@@ -1,6 +1,8 @@
 
 # SUPER COMPUTER GRAPHICS - Rapport du workshop
 
+Comme précisé sur le [README.md](/README.md), cet exercice de programmation consiste à coder des filtres pour des images (comme on peut en trouver dans Photoshop, les filtres Instagram, etc.), générer des formes, les animer, le tout réalisé en C++. 
+
 > [!NOTE]
 > Les étoiles (⭐) représentent le niveau de difficulté pour coder chaque effet. Le sujet d'origine contient des exercices allant jusqu'à six étoiles (⭐⭐⭐⭐⭐⭐).
 
@@ -192,7 +194,7 @@ J'ai juste répété la fonction `circle` en changeant le centre du cercle, mais
 
 ![image](output/dithering.png)
 
-Le dithering, ou tramage, consiste à calculer la valeur de couleur d'un pixel en fonction d'un objet mathématique bien spécifique appelé matrice de Bayer. C'est essentiellement un tableau de nombres aux valeurs précises et définies par cette équation (pour les plus matheux) : 
+Le dithering, ou tramage, consiste à calculer la valeur de couleur d'un pixel en fonction d'un objet mathématique bien spécifique appelé matrice de Bayer. C'est essentiellement un tableau de nombres aux valeurs précises et définies par cette équation (pour les curieux) : 
 
 $$
 M_{2n} = \begin{pmatrix}
@@ -203,7 +205,7 @@ $$
 
 À partir de ce tableau de nombres, et en appliquant un effet de seuil (qui convertit tous les pixels de couleurs en noir ou blanc uniquement), on obtient alors ce rendu si caractéristique !
 
-En modifiant les valeurs de couleur de mon threshold (donc au lieu de juste convertir mes pixels en noir ou blanc mais en d'autres couleurs) j'obtiens des palettes de couleurs différente :
+En modifiant les valeurs de couleur de mon threshold (donc au lieu de juste convertir mes pixels en noir ou blanc mais en d'autres couleurs) j'obtiens des palettes de couleurs différentes :
 
 ![image](output/dithering1.png)
 ![image](output/dithering2.png)

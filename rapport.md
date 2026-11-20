@@ -162,15 +162,22 @@ en fait j'ai juste répété la fonction cercle en changeant le centre du cercle
 
 ## ⭐⭐⭐⭐
 
-
-
-
-
-
-
-
-
-
 ### mosaïque miroir
 
 ![image](output/mosaic_mirror.png)
+
+### dithering
+
+![image](output/dithering.png)
+
+En modifiant les valeurs de mon threshold je peux avoir une palette de couleurs différente :
+
+![image](output/dithering1.png);
+![image](output/dithering2.png);
+
+Ou même le mélanger à un filtre mosaïque miroir par exemple !
+
+![image](output/experiment.png);
+
+
+

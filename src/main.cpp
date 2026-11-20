@@ -7,6 +7,7 @@ void keep_green_only(sil::Image& image)
 {
    for (glm::vec3& color : image.pixels())
     {
+        // mettre le rouge et le bleu à 0
         color.r = 0.f;
         color.b = 0.f;
     }
@@ -14,6 +15,7 @@ void keep_green_only(sil::Image& image)
 
 void channels_swap(sil::Image& image)
 {
+    // swapper les canaux rouges et bleus
     float tmp {0};
     for (glm::vec3& color : image.pixels())
     {
@@ -25,9 +27,11 @@ void greyscale(sil::Image& image)
 {
     for (glm::vec3& color : image.pixels())
     {
+        // moyenne des couleurs à l'écran, le résutat rend un niveau de gris
         float grey {(color.r + color.g + color.b)/3};
 
-        color = glm::vec3{grey, grey, grey};
+        // afficher la couleur en niveau de gris
+        color = glm::vec3{grey};
     }
 }
 
@@ -97,6 +101,7 @@ void noise2(sil::Image& image)
         color = glm::vec3{brightness + random_float(-0.5, 0.5)};
     }
 }
+
 
 void rotate90(sil::Image& image)
 {
@@ -234,6 +239,7 @@ void mosaic_mirror(sil::Image& image, int tiles)
     
     for (int x{0}; x < new_image.width(); x++)
     {
+
         if(x%tile_sizex == 0){
             tile_x ++;
         }
@@ -284,32 +290,60 @@ void background(sil::Image& image)
     }
 }
 
-//ATTENTION : à appliquer sur greyscale
-void threshold(sil::Image& image, float value)
+//ATTENTION : à appliquer sur greyscale ou dither
+void threshold(sil::Image& image, float value, float r1, float g1, float b1, float r2, float g2, float b2)
 {
     for (int x{0}; x < image.width(); x++)
     {
         for (int y{0}; y < image.height(); y++)
         {
             if(image.pixel(x, y).r > value){
-                image.pixel(x, y) = glm::vec3{1};
+                image.pixel(x, y) = glm::vec3{r1, g1, b1};
             } else {
-                image.pixel(x, y) = glm::vec3{0};
+                image.pixel(x, y) = glm::vec3{r2, g2, b2};
             }
         }
     }
 }
 
+
+void dither(sil::Image& image)
+{
+    float bayer_matrix_4x4[4][4] = {
+    {    -0.5,       0,  -0.375,   0.125 },
+    {    0.25,   -0.25,   0.375, - 0.125 },
+    { -0.3125,  0.1875, -0.4375,  0.0625 },
+    {  0.4375, -0.0625,  0.3125, -0.1875 },
+    };
+
+    
+    for (int x{0}; x < image.width(); x++)
+    {
+        for (int y{0}; y < image.height(); y++)
+        {
+            float brightness {(image.pixel(x,y).r + image.pixel(x,y).g + image.pixel(x,y).b)/3};
+
+            glm::vec3 output_color{brightness + 1*(bayer_matrix_4x4[x%4][y%4])};
+            float output_color2{brightness + 1*(bayer_matrix_4x4[x%4][y%4])};
+
+            image.pixel(x, y).r = output_color2;
+
+        }
+    }
+}
+
+
 int main()
 { 
     
-    sil::Image image{500, 500};
-    // sil::Image image{"images/image.jpg"}; 
+    // // sil::Image image{500, 500};
+    // sil::Image image{"images/suns.jpg"}; 
 
-    background(image);
-    rosace(image, image.width()/2, image.height()/2, 100, 10);
-    image.save("output/rosace.png");
-
+    // // background(image);
+    // mosaic_mirror(image, 6);
+    // dither(image);
+    // threshold(image, 0.5);
+    // image.save("output/experiment.png");
 
 
     // channels_swap(image);
@@ -334,15 +368,16 @@ int main()
     // image.save("output/noise.png");
 
     
-    // for (int x{0}; x < 450; x++){
-    //     sil::Image image{500, 500};
-    //     background(image);
-    //     rosace(image, image.width()/2, image.height()/2, 1+x, 15+x/5); 
-    //     mosaic_mirror(image, 6);
-    //     channels_swap(image);
-    //     std::stringstream stream;
-    //     stream << "output/anim2/anim_" << x << ".png";
-    //     image.save(stream.str());
-    // }
+    for (int x{1}; x < 450; x++){
+        sil::Image image{500, 500};
+        background(image);
+        rosace(image, image.width()/2, image.height()/2, 1+x, 15+x/5); 
+        mosaic_mirror(image, 6);
+        dither(image);
+        threshold(image, 0.5, 1-(x/450.f), 1-(x/450.f), 1, 0.5+(x/900.f), 0.5-(x/900.f), 1-(x/450.f));
+        std::stringstream stream;
+        stream << "output/anim3/anim_" << x << ".png";
+        image.save(stream.str());
+    }
 
 }

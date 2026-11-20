@@ -376,8 +376,6 @@ sil::Image diamond_square(int size)
     while(last >= 1){
         for(int x{0}; x <= squares; x++)
         {
-            
-                
             // coins
             int& top_left = altitude[first][first];
             int& top_right = altitude[last][first];
@@ -441,7 +439,7 @@ int main()
     // threshold(image, 0.5, 1, 1, 1, 0, 0, 0);
     // image.save("output/dither.png");
     
-    sil::Image image(diamond_square(5)); 
+    sil::Image image(diamond_square(4)); 
     image.save("output/diamondsquare/iteration1.png");
 
 

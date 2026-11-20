@@ -236,6 +236,13 @@ for (int x{1}; x < 450; x++){
 ```
 Pour expliquer plus précisément le processus d'animation : il suffit d'utiliser une boucle `for` pour itérer la génération d'image. On applique les filtres qu'on veut (en l'occurence du dithering et une mosaïque miroir), puis on renomme à chaque fois l'image de sortie avec notre index `x` pour ne pas les écraser.  J'ai ensuite récupéré toutes les frames et en j'en ai fait le .gif que vous voyez plus haut via un site web de création de gifs ! 
 
+### Diamond square (raté)
+
+![image](output/diamondsquare/iteration%20ratée.png)
+
+J'ai réussi à créer la formule basique (calculer les milieux + diamants), sans pour autant avoir réussi à boucler correctement le processus pour compléter l'image, et sans confirmation que les valeurs d'altitudes soient correctes, faute de temps (et d'énergie). Je m'avoue vaincu pour cette fois !
+
+
 
 
 

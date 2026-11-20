@@ -21,7 +21,7 @@ void channels_swap(sil::Image& image)
     }
 }
 
-void black_white(sil::Image& image)
+void greyscale(sil::Image& image)
 {
     for (glm::vec3& color : image.pixels())
     {
@@ -88,6 +88,16 @@ void noise(sil::Image& image, bool mono, int strength)
     }
 }
 
+void noise2(sil::Image& image)
+{
+    for (glm::vec3& color : image.pixels())
+    {
+        float brightness {(color.r + color.g + color.b)/3};
+
+        color = glm::vec3{brightness + random_float(-0.5, 0.5)};
+    }
+}
+
 void rotate90(sil::Image& image)
 {
     for (int x{0}; x < image.width(); x++)
@@ -106,7 +116,6 @@ void rgbsplit(sil::Image& image, int split_strength)
     {
         for (int y{0}; y < image.height(); y++)
         {
-            output.pixel(x, y).g = image.pixel(x, y).g;
             output.pixel(x, y) = glm::vec3{0.75, image.pixel(x, y).g, 0.75};
             if(x>split_strength){
                 output.pixel(x, y).r = image.pixel(x-split_strength, y).r;
@@ -169,9 +178,6 @@ void circle(sil::Image& image, int centerx, int centery, int radius, int thickne
             if (std::pow(radius - thickness, 2) <= disk_equation && disk_equation <= std::pow(radius, 2)) {
                 image.pixel(x, y) = glm::vec3{0};
             }
-            //     // tracer le fond
-            //     image.pixel(x, y) = glm::vec3{1, y/float(image.height()*5)+0.85, y/float(image.height()*5)+0.95};
-            // }
         }
     }
 }
@@ -278,94 +284,65 @@ void background(sil::Image& image)
     }
 }
 
-int main()
+//ATTENTION : à appliquer sur greyscale
+void threshold(sil::Image& image, float value)
 {
-    // {
-    //     sil::Image image{"images/image.jpg"}; 
-    //     keep_green_only(image); 
-    //     image.save("output/keep_green_only.png");
-    // }
-    // {
-    //     sil::Image image{"images/image.jpg"}; 
-    //     channels_swap(image); 
-    //     image.save("output/channels_swap.png");
-    // }
-    // {
-    //     sil::Image image{"images/image.jpg"}; 
-    //     black_white(image); 
-    //     image.save("output/black_white.png");
-    // }
-    // {
-    //     sil::Image image{"images/image.jpg"}; 
-    //     invert(image); 
-    //     image.save("output/invert.png");
-    // }
-    // {
-    //     sil::Image image{300, 200};
-    //     gradient(image); 
-    //     image.save("output/gradient.png");
-    // }
-    // {
-    //     sil::Image image{"images/image.jpg"}; 
-    //     mirror(image); 
-    //     image.save("output/mirror.png");
-    // }
-    // {
-    //     sil::Image image{"images/image.jpg"}; 
-    //     noise(image); 
-    //     image.save("output/noise.png");
-    // }
-    // {
-    //     sil::Image image{"images/image.jpg"}; 
-    //     rotate90(image); 
-    //     image.save("output/rotate90.png");
-    // }
-    // {
-    //     sil::Image image{"images/image.jpg"}; 
-    //     rgbsplit(image); 
-    //     image.save("output/rgbsplit.png");
-    // }
-    // {   
-    //     sil::Image image{500, 500}; 
-    //     circle(image, image.width()/2, image.height()/2, 100, 25); 
-    //     image.save("output/circle.png");
-    // }
-    // {   
-    //     sil::Image image{500, 500}; 
-    //     disc(image, 100); 
-    //     image.save("output/disc.png");
-    // }
-    // {   
-    //     for (int x{0}; x < 450; x++){
-    //         sil::Image image{500, 500};
-    //         disc(image, x); 
-    //         colorsplit(image, x/4);
-    //         std::stringstream stream;
-    //         stream << "output/disk_anim/disk_anim_" << x << ".png";
-    //         image.save(stream.str());
-    //     }
-    // }
-    // {   
-    //     sil::Image image{"images/image.jpg"}; 
-    //     mosaic_mirror(image, 10); 
-    //     image.save("output/mosaic_mirror.png");
-    // }
-    // {   
-    //     sil::Image image{"images/image.jpg"}; 
-    //     mosaic(image, 10); 
-    //     image.save("output/mosaic.png");
-    // }
-    {   
-        for (int x{0}; x < 450; x++){
-            sil::Image image{500, 500};
-            background(image);
-            rosace(image, image.width()/2, image.height()/2, 1+x, 15+x/5); 
-            mosaic_mirror(image, 6);
-            channels_swap(image);
-            std::stringstream stream;
-            stream << "output/anim2/anim_" << x << ".png";
-            image.save(stream.str());
+    for (int x{0}; x < image.width(); x++)
+    {
+        for (int y{0}; y < image.height(); y++)
+        {
+            if(image.pixel(x, y).r > value){
+                image.pixel(x, y) = glm::vec3{1};
+            } else {
+                image.pixel(x, y) = glm::vec3{0};
+            }
         }
     }
+}
+
+int main()
+{ 
+    
+    sil::Image image{500, 500};
+    // sil::Image image{"images/image.jpg"}; 
+
+    background(image);
+    rosace(image, image.width()/2, image.height()/2, 100, 10);
+    image.save("output/rosace.png");
+
+
+
+    // channels_swap(image);
+    // image.save("output/channels_swap.png");
+
+    // greyscale(image);
+    // image.save("output/greyscale.png");
+
+    // keep_green_only(image);
+    // image.save("output/green.png");
+
+    // rgbsplit(image, 10);
+    // image.save("output/rgb_split.png");
+
+    // invert(image);
+    // image.save("output/invert.png");
+
+    // rotate90(image);
+    // image.save("output/rotate90.png");
+
+    // noise(image, true, 5);
+    // image.save("output/noise.png");
+
+    
+    // for (int x{0}; x < 450; x++){
+    //     sil::Image image{500, 500};
+    //     background(image);
+    //     rosace(image, image.width()/2, image.height()/2, 1+x, 15+x/5); 
+    //     mosaic_mirror(image, 6);
+    //     channels_swap(image);
+    //     std::stringstream stream;
+    //     stream << "output/anim2/anim_" << x << ".png";
+    //     image.save(stream.str());
+    // }
 
 }
